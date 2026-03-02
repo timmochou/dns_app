@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  as-server:
+    build: ./AS
+    container_name: as-service
+    ports:
+      - "53533:53533/udp"
+
+  fs-server:
+    build: ./FS
+    container_name: fs-service
+    ports:
+      - "9090:9090"
+    depends_on:
+      - as-server
+
+  us-server:
+    build: ./US
+    container_name: us-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - as-server
+      - fs-server

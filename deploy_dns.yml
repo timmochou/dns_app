@@ -1,0 +1,107 @@
+# ===================== AS =====================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: as-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: as-service
+  template:
+    metadata:
+      labels:
+        app: as-service
+    spec:
+      containers:
+      - name: as-service
+        image: timmochou/as-service:latest
+        ports:
+        - containerPort: 53533
+          protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: as-service
+spec:
+  type: NodePort
+  selector:
+    app: as-service
+  ports:
+  - port: 53533
+    targetPort: 53533
+    nodePort: 30001
+    protocol: UDP
+
+---
+# ===================== FS =====================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fs-service
+  template:
+    metadata:
+      labels:
+        app: fs-service
+    spec:
+      containers:
+      - name: fs-service
+        image: timmochou/fs-service:latest
+        ports:
+        - containerPort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fs-service
+spec:
+  type: NodePort
+  selector:
+    app: fs-service
+  ports:
+  - port: 9090
+    targetPort: 9090
+    nodePort: 30002
+    protocol: TCP
+
+---
+# ===================== US =====================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: us-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: us-service
+  template:
+    metadata:
+      labels:
+        app: us-service
+    spec:
+      containers:
+      - name: us-service
+        image: timmochou/us-service:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: us-service
+spec:
+  type: NodePort
+  selector:
+    app: us-service
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30003
+    protocol: TCP
